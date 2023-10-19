@@ -1,0 +1,14 @@
+---
+title: "#TidyTuesday, 10/24/23"
+description: "Another data scientist enters the fray"
+author: "Aidan Berg"
+date: "2023-10-24"
+draft: TRUE
+categories: [news, code, analysis]
+---
+
+After a long while of trying to explain exactly what I do, I have decided to start up a data science blog, to replace my old professional website, and to maybe develop a bit of a portfolio of my work. Since I am a dedicated useR, and have always wanted to be involved in the R community, I decided to jump into the #TidyTuesday Challenge as my first post!
+
+```{r}
+
+```
