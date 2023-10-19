@@ -1,0 +1,14 @@
+{
+  "hash": "1b21f81a4ce7a91c28f0b9cef076e16a",
+  "result": {
+    "markdown": "---\ntitle: \"#TidyTuesday, 10/24/23\"\ndescription: \"Another data scientist enters the fray\"\nauthor: \"Aidan Berg\"\ndate: \"2023-10-24\"\ndraft: TRUE\ncategories: [news, code, analysis]\n---\n\n\nAfter a long while of trying to explain exactly what I do, I have decided to start up a data science blog, to replace my old professional website, and to maybe develop a bit of a portfolio of my work. Since I am a dedicated useR, and have always wanted to be involved in the R community, I decided to jump into the #TidyTuesday Challenge as my first post!\n\n\n::: {.cell}\n\n:::\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
