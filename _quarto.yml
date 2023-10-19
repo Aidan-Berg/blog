@@ -1,0 +1,19 @@
+project:
+  type: website
+  output-dir: docs
+website:
+  title: "blog"
+  navbar:
+    right:
+      - about.qmd
+      - icon: github
+        href: https://github.com/Aidan-Berg
+      - icon: linkedin
+        href: https://www.linkedin.com/in/aidan-berg-epi/
+format:
+  html:
+    theme: flatly
+    css: styles.css
+
+editor: source
+
