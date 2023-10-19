@@ -2,16 +2,14 @@
 title: "About"
 image: headshot.png
 about:
-  template: jolla
+  template: trestles
   links:
     - icon: github
       href: https://github.com/Aidan-Berg
     - icon: linkedin
       href: https://www.linkedin.com/in/aidan-berg-epi/
 ---
-
 <div style="text-align: justify">
-
 ## Bio
 
 Hello! I am Aidan Berg *(he/him)*, an epidemiologist working as a research data specialist at the University of Illinois School of Social Work. Currently, much of my work focuses on independent evaluation of Illinois Medicaid 1115 Behavioral Health Transformation Demonstration Waiver. I have an affinity for data cleaning, manipulation, analysis, and visualization with a variety of software packages, primarily R. When I am not working on data analysis, I am usually writing: grant reports, policy evaluation, IRB requests, PHI data applications, and whatever other technical writing can move our projects at UIUC's Center for Prevention Research and Development forward.
@@ -33,5 +31,4 @@ B.S. in Community Health \| August 2018 - May 2021
 **Center for Prevention Research and Development** \| Research Data Specialist \| January 2023 - Present
 
 **University of Illinois Extension** \| Student Researcher \| February 2019 - December 2022
-
 </div>
