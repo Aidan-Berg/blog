@@ -3,7 +3,6 @@ title: "#TidyTuesday, 10/24/23"
 description: "Another data scientist enters the fray"
 author: "Aidan Berg"
 date: "2023-10-24"
-draft: FALSE
 categories: [news, code, analysis]
 ---
 
