@@ -8,6 +8,8 @@ about:
       href: https://github.com/Aidan-Berg
     - icon: linkedin
       href: https://www.linkedin.com/in/aidan-berg-epi/
+    - icon: email
+      href: mailto:bergaidanj@gmail.com
 ---
 <div style="text-align: justify">
 ## Bio
