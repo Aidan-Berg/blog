@@ -27,11 +27,13 @@ All this is common knowledge, so to quickly explain everything: Chicago and Cook
 
 You see, the congressional districts in Chicago have almost always been democratic strongholds, those 'downstate' have been republican strongholds. The collar counties, however, containing those election-swaying suburban voters, tend to flip-flop. The votes of the collar counties are the reason why Republican candidates clung to hope in state elections as Illinois liberalized, such as Former Governor Bruce Rauner's term from 2015 to 2019.
 
+## Picking through the data
+
 Anyways, these intra-state dynamics, seemingly defined by an urban/rural divide between Chicagoland and downstate Illinois, are what make political studies within Illinois so interesting, since the only other state with a similar makeup is New York[^4]. Without furtherado, let's crack open the dataset. I have a very specific idea of the visualization I'd like to make, inspired by [this dumbbell plot from the R Graph Gallery](https://r-graph-gallery.com/web-dumbbell-chart-with-a-gap-column.html). I'd also like to make some maps, since I have been wanting to work more with R's mapping/GIS capabilities. I know for a fact that a map of just Illinois will be insufficient, since the congressional districts of Chicago are [quite famous for their gerrymandered complexity](https://en.wikipedia.org/wiki/Illinois%27s_4th_congressional_district), so I'll have to make an inset map. That's two visualizations, so I'll make those and call it a day.
 
 [^4]: California comes close, but the urban/rural delineation is different due to the presence of multiple large urban areas (e.g., Los Angeles, San Francisco, San Diego, San Jose, etc. etc.), while New York and Illinois have one very, very large city.
 
-```{r Load the data and packages!}
+```{r Load the data and packages!, error=FALSE,message=FALSE,warning=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)    # for just about everything
 library(patchwork)    # for stitching charts together
@@ -209,7 +211,10 @@ Perfect! We can almost see a gradient from the rural districts to the loop of Ch
 
 Either way, that's me for today. I could make all of these charts much, much better, like adding labels to the districts on the map, centering the Chicago inset instead of using the border with Wisconsin as an anchor and generally cleaning up fonts and spacing, but the hour is late, and I'd like to wrap up. This was a lot of fun, the amount of detail than can be sunk into each chart is nearly infinite, and I was happy to get some more experience working with maps. Till next time!
 
+*The album I listened to while picking apart the politics of Illinois was [Illinois](https://open.spotify.com/album/1pOl0KEC1iQnA6F0XxV4To?si=hCkHVQpCRsSvnGqYJkp_6w) by Surfjan Stevens*
+
+
+### References
+
 ::: {#refs}
 :::
-
-*The album I listened to while picking apart the politics of Illinois was [Illinois](https://open.spotify.com/album/1pOl0KEC1iQnA6F0XxV4To?si=hCkHVQpCRsSvnGqYJkp_6w) by Surfjan Stevens*
