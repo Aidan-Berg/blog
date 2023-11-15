@@ -7,7 +7,7 @@ about:
       href: https://github.com/Aidan-Berg
     - icon: linkedin
       href: https://www.linkedin.com/in/aidan-berg-epi/
-    - icon: email
+    - icon: envelope
       href: mailto:bergaidanj@gmail.com
 ---
 <div style="text-align: justify">
@@ -18,7 +18,6 @@ Hello! I am Aidan Berg *(he/him)*, an epidemiologist working as a research data 
 When I'm not at work, I enjoy biking, board games, and reading (mostly horror novels by Shirley Jackson and Peter Straub).
 
 ## Education
-
 **University of Illinois at Urbana-Champaign** \| Urbana, IL
 
 MPH in Epidemiology \| August 2021 - December 2022
@@ -28,8 +27,13 @@ MPH in Epidemiology \| August 2021 - December 2022
 B.S. in Community Health \| August 2018 - May 2021
 
 ## Experience
-
 **Center for Prevention Research and Development** \| Research Data Specialist \| January 2023 - Present
-
 **University of Illinois Extension** \| Student Researcher \| February 2019 - December 2022
+
+## Awards and Accolades
+
+**Outstanding Graduate Capstone Award** - *Henderson County Infectious Disease Plan* \| University of Illinois at Urbana-Champaign \| December 2022 
+
+**Highest Honors** \| University of Illinois at Urbana-Champaign, 2022
+
 </div>
