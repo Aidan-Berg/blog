@@ -3,12 +3,12 @@ image: headshot.png
 about:
   template: jolla
   links:
-    - icon: github
-      href: https://github.com/Aidan-Berg
     - icon: linkedin
       href: https://www.linkedin.com/in/aidan-berg-epi/
     - icon: envelope
       href: mailto:bergaidanj@gmail.com
+    - icon: github
+      href: https://github.com/Aidan-Berg
 ---
 <div style="text-align: justify">
 ## Bio
