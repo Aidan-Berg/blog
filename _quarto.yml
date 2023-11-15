@@ -4,8 +4,6 @@ project:
 website:
   title: "Aidan Berg"
   navbar:
-    left: 
-      - href: index.qmd
     right:
       - blog.qmd
       - icon: github
