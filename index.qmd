@@ -1,4 +1,5 @@
 ---
+title: "About Me"
 image: headshot.png
 about:
   template: jolla
@@ -32,7 +33,7 @@ B.S. in Community Health \| August 2018 - May 2021
 
 ## Awards and Accolades
 
-**Outstanding Graduate Capstone Award** - *Henderson County Infectious Disease Plan* \| University of Illinois at Urbana-Champaign \| December 2022 
+**Outstanding Graduate Capstone Award** \| *Henderson County Infectious Disease Plan* \| University of Illinois at Urbana-Champaign \| December 2022 
 
 **Highest Honors** \| University of Illinois at Urbana-Champaign, 2022
 
