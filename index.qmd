@@ -15,8 +15,9 @@ about:
 Hello! I am Aidan Berg *(he/him)*, an epidemiologist working as a research data specialist at the University of Illinois School of Social Work. Currently, much of my work focuses on independent evaluation of Illinois Medicaid 1115 Behavioral Health Transformation Demonstration Waiver. I have an affinity for data cleaning, manipulation, analysis, and visualization with a variety of software packages, primarily R. When I am not working on data analysis, I am usually writing: grant reports, policy evaluation, IRB requests, PHI data applications, and whatever other technical writing can move our projects at UIUC's Center for Prevention Research and Development forward.
 
 When I'm not at work, I enjoy biking, board games, and reading (mostly horror novels by Shirley Jackson and Peter Straub).
-
+</div>
 ## Education
+<div style="text-align: justify">
 **University of Illinois at Urbana-Champaign** \| Urbana, IL
 
 MPH in Epidemiology \| August 2021 - December 2022
@@ -24,14 +25,15 @@ MPH in Epidemiology \| August 2021 - December 2022
 **University of Illinois at Urbana-Champaign** \| Urbana, IL
 
 B.S. in Community Health \| August 2018 - May 2021
-
+</div>
 ## Experience
+<div style="text-align: justify">
 **Center for Prevention Research and Development** \| Research Data Specialist \| January 2023 - Present
 
 **University of Illinois Extension** \| Student Researcher \| February 2019 - December 2022
-
+</div>
 ## Awards and Accolades
-
+<div style="text-align: justify">
 **Outstanding Graduate Capstone Award** \| *Henderson County Infectious Disease Plan* \| University of Illinois at Urbana-Champaign \| December 2022 
 
 **Highest Honors** \| University of Illinois at Urbana-Champaign, 2022
