@@ -4,7 +4,7 @@
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "Hello! I am Aidan Berg (he/him), an epidemiologist working as a research data specialist at the University of Illinois School of Social Work. Currently, much of my work focuses on independent evaluation of Illinois Medicaid 1115 Behavioral Health Transformation Demonstration Waiver. I have an affinity for data cleaning, manipulation, analysis, and visualization with a variety of software packages, primarily R. When I am not working on data analysis, I am usually writing: grant reports, policy evaluation, IRB requests, PHI data applications, and whatever other technical writing can move our projects at UIUC’s Center for Prevention Research and Development forward.\nWhen I’m not at work, I enjoy biking, board games, and reading (mostly horror novels by Shirley Jackson and Peter Straub).\n\n\n\nUniversity of Illinois at Urbana-Champaign | Urbana, IL\nMPH in Epidemiology | August 2021 - December 2022\nUniversity of Illinois at Urbana-Champaign | Urbana, IL\nB.S. in Community Health | August 2018 - May 2021\n\n\n\nCenter for Prevention Research and Development | Research Data Specialist | January 2023 - Present\nUniversity of Illinois Extension | Student Researcher | February 2019 - December 2022"
+    "text": "{css, echo = FALSE} .justify {   text-align: justify !important }"
   },
   {
     "objectID": "index.html",
@@ -31,22 +31,22 @@
     "objectID": "about.html#bio",
     "href": "about.html#bio",
     "title": "About",
-    "section": "",
-    "text": "Hello! I am Aidan Berg (he/him), an epidemiologist working as a research data specialist at the University of Illinois School of Social Work. Currently, much of my work focuses on independent evaluation of Illinois Medicaid 1115 Behavioral Health Transformation Demonstration Waiver. I have an affinity for data cleaning, manipulation, analysis, and visualization with a variety of software packages, primarily R. When I am not working on data analysis, I am usually writing: grant reports, policy evaluation, IRB requests, PHI data applications, and whatever other technical writing can move our projects at UIUC’s Center for Prevention Research and Development forward.\nWhen I’m not at work, I enjoy biking, board games, and reading (mostly horror novels by Shirley Jackson and Peter Straub)."
+    "section": "Bio",
+    "text": "Bio\nHello! I am Aidan Berg (he/him), an epidemiologist working as a research data specialist at the University of Illinois School of Social Work. Currently, much of my work focuses on independent evaluation of Illinois Medicaid 1115 Behavioral Health Transformation Demonstration Waiver. I have an affinity for data cleaning, manipulation, analysis, and visualization with a variety of software packages, primarily R. When I am not working on data analysis, I am usually writing: grant reports, policy evaluation, IRB requests, PHI data applications, and whatever other technical writing can move our projects at UIUC’s Center for Prevention Research and Development forward.\nWhen I’m not at work, I enjoy biking, board games, and reading (mostly horror novels by Shirley Jackson and Peter Straub)."
   },
   {
     "objectID": "about.html#education",
     "href": "about.html#education",
     "title": "About",
-    "section": "",
-    "text": "University of Illinois at Urbana-Champaign | Urbana, IL\nMPH in Epidemiology | August 2021 - December 2022\nUniversity of Illinois at Urbana-Champaign | Urbana, IL\nB.S. in Community Health | August 2018 - May 2021"
+    "section": "Education",
+    "text": "Education\nUniversity of Illinois at Urbana-Champaign | Urbana, IL\nMPH in Epidemiology | August 2021 - December 2022\nUniversity of Illinois at Urbana-Champaign | Urbana, IL\nB.S. in Community Health | August 2018 - May 2021"
   },
   {
     "objectID": "about.html#experience",
     "href": "about.html#experience",
     "title": "About",
-    "section": "",
-    "text": "Center for Prevention Research and Development | Research Data Specialist | January 2023 - Present\nUniversity of Illinois Extension | Student Researcher | February 2019 - December 2022"
+    "section": "Experience",
+    "text": "Experience\nCenter for Prevention Research and Development | Research Data Specialist | January 2023 - Present\nUniversity of Illinois Extension | Student Researcher | February 2019 - December 2022"
   },
   {
     "objectID": "posts/Tidy-Tuesday-11-07-23/index.html#downstate-upstate-collar-counties-and-the-like",
@@ -74,7 +74,7 @@
     "href": "blog.html",
     "title": "Blog",
     "section": "",
-    "text": "TidyTuesday, 11/7/23\n\n\n\n\n\n\n\ncode\n\n\nanalysis\n\n\n\n\nVisualising election results in Illinois\n\n\n\n\n\n\nNov 7, 2023\n\n\nAidan Berg\n\n\n\n\n\n\n  \n\n\n\n\nTidyTuesday, 10/24/23\n\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\nAnother data scientist enters the fray\n\n\n\n\n\n\nOct 24, 2023\n\n\nAidan Berg\n\n\n\n\n\n\nNo matching items"
+    "text": "TidyTuesday, 10/24/23\n\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\nAnother data scientist enters the fray\n\n\n\n\n\n\nDec 8, 2023\n\n\nAidan Berg\n\n\n\n\n\n\n  \n\n\n\n\nTidyTuesday, 11/7/23\n\n\n\n\n\n\n\ncode\n\n\nanalysis\n\n\n\n\nVisualising election results in Illinois\n\n\n\n\n\n\nNov 7, 2023\n\n\nAidan Berg\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "index.html#bio",

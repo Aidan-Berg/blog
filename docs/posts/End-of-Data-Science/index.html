@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.433">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Aidan Berg">
+<meta name="dcterms.date" content="2023-12-08">
+<meta name="description" content="Or, finding oneself an Okie">
+
+<title>Aidan Berg - Analyzing at the End of Data Science</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/quarto-contrib/social-share-0.1.0/social-share.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/social-share-0.1.0/all.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Aidan Berg</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../blog.html" rel="" target="">
+ <span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/Aidan-Berg" rel="" target=""><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/aidan-berg-epi/" rel="" target=""><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Analyzing at the End of Data Science</h1>
+                  <div>
+        <div class="description">
+          Or, finding oneself an Okie
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">writing</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Aidan Berg </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">December 8, 2023</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<p>Forgive me, if you can, for the dramatic title. It’s not the end of data science; it’s a renaissance. A revolution which will pass data science and analytics from those of us who study R, SPSS, SAS, and SQL and into the hands of the customer. Being a good scientist, I should be happy with this democratization of the field. As a epidemiologist, I should be overjoyed; many public health entities can redirect funding from consultants and into their community. As a person, trying to make my way through through the 21st Century, I’m deeply concerned for my own well being; I’d like to selfishly discuss some of the threats coming our way.</p>
+<p>As you can probably guess, the renaissance I am referencing is the debut of LLM Artificial Intelligence (AI)<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> models, developed by a host of Silicon Valley heavyweights and startups. The debut of Google’s Gemini 1.0 in the past days has spurred this essay; the realization that the rate at which I can learn is inconsequential compared to even early LLMs like Gemini and ChatGPT-4. I say early, because the moguls in San Jose will not surrender momentum while they’ve got it.</p>
+<p>I graduated in December of 2022, as AI entered the mainstream. I started work in January, after 3 weeks without gainful employment. ChatGPT-4, which just been slightly surpassed by Gemini, came out 8 weeks later. Like many others, I enjoyed a lengthy period of denial. AI was a useful tool. I work in the public sector, the changes will come for me last. AI is another overblown technology like the Google Glass. All these smoothed over my concerns – ignorance is bliss, after all.</p>
+<p>However, as the summer came to a close and cool air drafted south, I could no longer ignore reality. I made a few cursory attempts at using ChatGPT 3.5, a more primitive LLM. I was not shocked to find it could write code, I was not shocked it could tell me the developers behind the <code>tidyverse</code> code I had asked it to generate, and I was not shocked when it could write an opinion in the style of Ruth Bader Ginsburg on <a href="https://pennstatelaw.psu.edu/_file/TheCaseOfTheSpelunceanExplorers.pdf"><em>The Case of the Speluncean Explorers</em></a> by Lon L. Fuller.</p>
+<p>What settled over me as I used ChatGPT to write a saga on a reality in which the Beatles never succeeded, was pure dread. Generally, this is the part of every essay on the rise of AI where I discuss carriages and car – the buggywhip always comes up. However, this metaphor is weak. No-one feels sympathy for the buggy-whip maker, his quaint and niche industry being cleanly eliminated by the march of progress. It’s a metaphor which at this point is comfortably dead, a metaphor which feels comfortable because we’ve been smothered by it; we never learn the personality of the buggywhip maker, only that he is out of work, and deservedly so, for not anticipating the efficacy of the assembly line and the usefullness of the Model T.</p>
+<p>Instead of Edwardian buggy-whip makers, let’s read a passage from <em>The Grapes of Wrath</em>, chapter 5, by Steinbeck.</p>
+<blockquote class="blockquote">
+<p>But for your three dollars a day fifteen or twenty families can’t eat at all. Nearly a hundred people have to go out and wander on the roads for your three dollars a day. Is that right?”</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>And the driver said, “Can’t think of that. Got to think of my own kids. Three dollars a day, and it comes every day. Times are changing, mister, don’t you know? Can’t make a living on the land unless you’ve got two, five, ten thousand acres and a tractor. Crop land isn’t for little guys like us any more. You don’t kick up a howl because you can’t make Fords, or because you’re not the telephone company. Well, crops are like that now. Nothing to do about it. You try to get three dollars a day someplace. That’s the only way. (<span class="citation" data-cites="steinbeck2006grapes">Steinbeck and DeMott (<a href="#ref-steinbeck2006grapes" role="doc-biblioref">2006</a>)</span>)</p>
+</blockquote>
+<p>And,</p>
+<blockquote class="blockquote">
+<p>Why don’t you go on west to California? There’s work there, and it never gets cold. Why, you can reach out anywhere and pick an orange. Why, there’s always some kind of crop to work in. Why don’t you go there? (<span class="citation" data-cites="steinbeck2006grapes">Steinbeck and DeMott (<a href="#ref-steinbeck2006grapes" role="doc-biblioref">2006</a>)</span>)</p>
+</blockquote>
+<p>Data scientists, programmers, translators, and writers, we are not buggywhip makers. We are tenant farmers in Oklahoma. We are not fools who have ignored the future. The buggywhip slowly faded as carriages did; AI has only one good release before it is more cost effective as an assistant to a senior developer than a junior developer, or a technical writing team can lose a member (or two).</p>
+<p>Our professions, not just data science but a wide swathe of white-collar desk work, won’t be wiped out, just aligned to be efficient. Instead of 20 families working the land, one man with a tractor will. Instead of a dedicated data scientist for a project, there will be a dedicated data scientist for a whole company. Our employment won’t be eliminated entirely, we will find that our skills have been augmented to the point where only 10% of our number is needed, like farmers and tractors in Steinbeck. The rest of us meanwhile, will chase work in California: a smaller and smaller pool of jobs with a growing, teeming mass of competitors, more than could ever be hired.</p>
+<p>If we do not go to California, and find work elsewhere, all we will do is destroy another job market. How many of us will turn to work in carpentry, plumbing, and HVAC? How many will make the jump to project management? To selling insurance? To stock brokerage? Can any of these markets sustain an influx of young, educated workers without compensation collapsing? Those in the trades now are enjoying high pay thanks to a decade of pushing students into colleges and universities. Will those same workers tolerate supply-and-demand crashing their wages as they enter middle age?</p>
+<p>According to <span class="citation" data-cites="lacy1986america">Lacy and Bogie (<a href="#ref-lacy1986america" role="doc-biblioref">1986</a>)</span>, America’s farm population was 30.54% at the time of <em>The Grapes of Wrath</em>’s publishing in 1939, and just 7.03% in 1983 . As AI grows into a tool forever increasing efficiency and allowing companies to run extremely lean, I can’t help but wonder if the office worker in 2023 is the farmer of 1930. Our job is common, awaiting a great change that will make it uncommon. Even worse, farming was, and occasionally still is, an independent profession, each farmer their own business owner<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>, one of the ‘little guys’ from Steinbeck. The demands for an efficient market mean that the ‘little guy’ of, say, data science, is a consultant, whose fees spell doom the moment AI can dispose of them. White-collar work “isn’t for the little guys like us anymore”, it never was in the first place.</p>
+<p>Part of the beauty of <em>The Grapes of Wrath</em> is the sense of inevitability. Tenant farming is not eliminated because of an evil overlord who enjoys suffering, no. It’s the end product of an economic monster we’ve made:</p>
+<blockquote class="blockquote">
+<p>It happens that every man in a bank hates what the bank does, and yet the bank does it. The bank is something more than men, I tell you. It’s the monster. Men made it, but they can’t control it. (<span class="citation" data-cites="steinbeck2006grapes">Steinbeck and DeMott (<a href="#ref-steinbeck2006grapes" role="doc-biblioref">2006</a>)</span>)</p>
+</blockquote>
+<p>I am sure there is a cadre of Silicon Valley types who see the coming shift, and fear it, hate it even. But, I guarantee that each one thinks, ‘if not us, then the competition’. The bank must be protected. If OpenAI gives up, Google will not, and OpenAI’s employees will be out of work. It isn’t evil, it’s the consequence of everyone protecting their salary – to feed themselves, if we take money out of consideration. I would not ask an AI programmer to quit their job to protect mine, to endure the stress of a career change so I don’t have to. After all, they would be replaced by someone as eager and will. We made AI, we can’t control it’s effects. And, like the tractor driver in the first excerpt, we can’t think of those being put out of work, we have our own to think of. I am writing an essay only thinking of myself, the risks posed to me. Not once have I mentioned the potential of AI to radically change society for the better, only my own worries of being left behind.</p>
+<p>These changes have not happened yet, but I am sure they will. Proprietary AI will eliminate waste. Private or public, your employer will eliminate waste eventually. It’s cheaper to pay for electricity than a worker. Cheaper to have an AI access the infinite knowledge at it’s fingertips than to train someone. Not everyone will lose their desk work, but can we withstand the lost of 80% of them? Even 20%? We should all start looking for higher ground, but will there be room enough? Can these changes happen without supply and demand driving down the wages of the jobs which remain?</p>
+<p>There are many questions to be answers, and Steinbeck takes a grim view. The mechanization of agriculture is not stopped. The Joad family, traveling from Oklahoma to California in search of work, never finds steady employment, and it feels as though they are placed on rails, directed by a beast of our own making, but out of our control. Never once do they unite with others to fight the bank; and if they did, another bank would rise. Competition remains, everyone must work for their three dollars a day, thinking only of their own.</p>
+<p>My opinion on AI swings. I think the world as a whole will change for the better. I do not think my world will. There is always talk of Universal Basic Income or some other drastic policy to make up for the redundancy of entire industries, but none of the powers we’ve elected stand for it, and the coming changes will happen faster than we react. The farmers in Steinbeck may have again found success, but <em>The Grapes of Wrath</em>, published in 1939 as the Great Depression continued, was not so optimistic. We may be left behind, and we can’t know if we’ll be able to catch up again.</p>
+
+
+
+
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-lacy1986america" class="csl-entry" role="listitem">
+Lacy, A Wayne, and David W Bogie. 1986. <span>“America’s Farm Population: Historical Changes and Recent Trends.”</span> <em>New Dimensions in Rural Policy: Building Upon Our Heritage: Studies</em> 99 (31,974): 98.
+</div>
+<div id="ref-steinbeck2006grapes" class="csl-entry" role="listitem">
+Steinbeck, J., and R. DeMott. 2006. <em>The Grapes of Wrath</em>. Penguin Classics. Penguin Publishing Group. <a href="https://books.google.com/books?id=bhJgd3hGdxQC">https://books.google.com/books?id=bhJgd3hGdxQC</a>.
+</div>
+</div></section><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>I say ‘artificial intelligence’ in full, not because I think the reader needs an explanation, but rather because it feels so old-fashioned, even now, to say the full term.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>in 1920, that is. Farming too, has been aggressively centralized.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<div class="page-columns page-rows-contents page-layout-article"><div class="social-share"><a href="https://twitter.com/share?url=https://aidanberg.us/posts/End-of-Data-Science&amp;text=Entering the buggy-whip market in 1908" target="_blank" class="twitter"><i class="fab fa-twitter fa-fw fa-lg"></i></a><a href="https://www.linkedin.com/shareArticle?url=https://aidanberg.us/posts/End-of-Data-Science&amp;title=Entering the buggy-whip market in 1908" target="_blank" class="linkedin"><i class="fa-brands fa-linkedin-in fa-fw fa-lg"></i></a>  <a href="mailto:?subject=Entering the buggy-whip market in 1908&amp;body=Check out this link:https://aidanberg.us/posts/End-of-Data-Science" target="_blank" class="email"><i class="fa-solid fa-envelope fa-fw fa-lg"></i></a><a href="https://www.facebook.com/sharer.php?u=https://aidanberg.us/posts/End-of-Data-Science" target="_blank" class="facebook"><i class="fab fa-facebook-f fa-fw fa-lg"></i></a><a href="https://reddit.com/submit?url=https://aidanberg.us/posts/End-of-Data-Science&amp;title=Entering the buggy-whip market in 1908" target="_blank" class="reddit">   <i class="fa-brands fa-reddit-alien fa-fw fa-lg"></i></a><a href="https://www.stumbleupon.com/submit?url=https://aidanberg.us/posts/End-of-Data-Science&amp;title=Entering the buggy-whip market in 1908" target="_blank" class="stumbleupon"><i class="fa-brands fa-stumbleupon fa-fw fa-lg"></i></a><a href="https://www.tumblr.com/share/link?url=https://aidanberg.us/posts/End-of-Data-Science&amp;name=Entering the buggy-whip market in 1908" target="_blank" class="tumblr"><i class="fa-brands fa-tumblr fa-fw fa-lg"></i></a><a href="javascript:void(0);" onclick="var mastodon_instance=prompt('Mastodon Instance / Server Name?'); if(typeof mastodon_instance==='string' &amp;&amp; mastodon_instance.length){this.href='https://'+mastodon_instance+'/share?text=Entering the buggy-whip market in 1908 https://aidanberg.us/posts/End-of-Data-Science'}else{return false;}" target="_blank" class="mastodon"><i class="fa-brands fa-mastodon fa-fw fa-lg"></i></a></div></div>
+
+
+
+</body></html>

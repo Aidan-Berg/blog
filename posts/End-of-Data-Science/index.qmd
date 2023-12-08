@@ -1,0 +1,66 @@
+---
+title: "Analyzing at the End of Data Science"
+description: "Or, finding oneself an Okie"
+author: "Aidan Berg"
+date: "2023-12-08"
+categories: [writing]
+filters:
+  - social-share
+share:
+  permalink: "https://aidanberg.us/posts/End-of-Data-Science"
+  description: "Entering the buggy-whip market in 1908"
+  twitter: true
+  facebook: true
+  reddit: true
+  stumble: true
+  tumblr: true
+  linkedin: true
+  email: true
+  mastodon: true
+bibliography: bibliography.bib
+draft: TRUE
+---
+
+Forgive me, if you can, for the dramatic title. It's not the end of data science; it's a renaissance. A revolution which will pass data science and analytics from those of us who study R, SPSS, SAS, and SQL and into the hands of the customer. Being a good scientist, I should be happy with this democratization of the field. As a epidemiologist, I should be overjoyed; many public health entities can redirect funding from consultants and into their community. As a person, trying to make my way through through the 21st Century, I'm deeply concerned for my own well being; I'd like to selfishly discuss some of the threats coming our way.
+
+As you can probably guess, the renaissance I am referencing is the debut of LLM Artificial Intelligence (AI)[^1] models, developed by a host of Silicon Valley heavyweights and startups. The debut of Google's Gemini 1.0 in the past days has spurred this essay; the realization that the rate at which I can learn is inconsequential compared to even early LLMs like Gemini and ChatGPT-4. I say early, because the moguls in San Jose will not surrender momentum while they've got it.
+
+[^1]: I say 'artificial intelligence' in full, not because I think the reader needs an explanation, but rather because it feels so old-fashioned, even now, to say the full term.
+
+I graduated in December of 2022, as AI entered the mainstream. I started work in January, after 3 weeks without gainful employment. ChatGPT-4, which just been slightly surpassed by Gemini, came out 8 weeks later. Like many others, I enjoyed a lengthy period of denial. AI was a useful tool. I work in the public sector, the changes will come for me last. AI is another overblown technology like the Google Glass. All these smoothed over my concerns -- ignorance is bliss, after all.
+
+However, as the summer came to a close and cool air drafted south, I could no longer ignore reality. I made a few cursory attempts at using ChatGPT 3.5, a more primitive LLM. I was not shocked to find it could write code, I was not shocked it could tell me the developers behind the `tidyverse` code I had asked it to generate, and I was not shocked when it could write an opinion in the style of Ruth Bader Ginsburg on [*The Case of the Speluncean Explorers*](https://pennstatelaw.psu.edu/_file/TheCaseOfTheSpelunceanExplorers.pdf) by Lon L. Fuller.
+
+What settled over me as I used ChatGPT to write a saga on a reality in which the Beatles never succeeded, was pure dread. Generally, this is the part of every essay on the rise of AI where I discuss carriages and car -- the buggywhip always comes up. However, this metaphor is weak. No-one feels sympathy for the buggy-whip maker, his quaint and niche industry being cleanly eliminated by the march of progress. It's a metaphor which at this point is comfortably dead, a metaphor which feels comfortable because we've been smothered by it; we never learn the personality of the buggywhip maker, only that he is out of work, and deservedly so, for not anticipating the efficacy of the assembly line and the usefullness of the Model T.
+
+Instead of Edwardian buggy-whip makers, let's read a passage from *The Grapes of Wrath*, chapter 5, by Steinbeck.
+
+> But for your three dollars a day fifteen or twenty families can't eat at all. Nearly a hundred people have to go out and wander on the roads for your three dollars a day. Is that right?"
+
+> And the driver said, "Can't think of that. Got to think of my own kids. Three dollars a day, and it comes every day. Times are changing, mister, don't you know? Can't make a living on the land unless you've got two, five, ten thousand acres and a tractor. Crop land isn't for little guys like us any more. You don't kick up a howl because you can't make Fords, or because you're not the telephone company. Well, crops are like that now. Nothing to do about it. You try to get three dollars a day someplace. That's the only way. (@steinbeck2006grapes)
+
+And,
+
+> Why don't you go on west to California? There's work there, and it never gets cold. Why, you can reach out anywhere and pick an orange. Why, there's always some kind of crop to work in. Why don't you go there? (@steinbeck2006grapes)
+
+Data scientists, programmers, translators, and writers, we are not buggywhip makers. We are tenant farmers in Oklahoma. We are not fools who have ignored the future. The buggywhip slowly faded as carriages did; AI has only one good release before it is more cost effective as an assistant to a senior developer than a junior developer, or a technical writing team can lose a member (or two).
+
+Our professions, not just data science but a wide swathe of white-collar desk work, won't be wiped out, just aligned to be efficient. Instead of 20 families working the land, one man with a tractor will. Instead of a dedicated data scientist for a project, there will be a dedicated data scientist for a whole company. Our employment won't be eliminated entirely, we will find that our skills have been augmented to the point where only 10% of our number is needed, like farmers and tractors in Steinbeck. The rest of us meanwhile, will chase work in California: a smaller and smaller pool of jobs with a growing, teeming mass of competitors, more than could ever be hired.
+
+If we do not go to California, and find work elsewhere, all we will do is destroy another job market. How many of us will turn to work in carpentry, plumbing, and HVAC? How many will make the jump to project management? To selling insurance? To stock brokerage? Can any of these markets sustain an influx of young, educated workers without compensation collapsing? Those in the trades now are enjoying high pay thanks to a decade of pushing students into colleges and universities. Will those same workers tolerate supply-and-demand crashing their wages as they enter middle age?
+
+According to @lacy1986america, America's farm population was 30.54% at the time of *The Grapes of Wrath*'s publishing in 1939, and just 7.03% in 1983 . As AI grows into a tool forever increasing efficiency and allowing companies to run extremely lean, I can't help but wonder if the office worker in 2023 is the farmer of 1930. Our job is common, awaiting a great change that will make it uncommon. Even worse, farming was, and occasionally still is, an independent profession, each farmer their own business owner[^3], one of the 'little guys' from Steinbeck. The demands for an efficient market mean that the 'little guy' of, say, data science, is a consultant, whose fees spell doom the moment AI can dispose of them. White-collar work "isn't for the little guys like us anymore", it never was in the first place.
+
+[^3]: in 1920, that is. Farming too, has been aggressively centralized.
+
+Part of the beauty of *The Grapes of Wrath* is the sense of inevitability. Tenant farming is not eliminated because of an evil overlord who enjoys suffering, no. It's the end product of an economic monster we've made:
+
+> It happens that every man in a bank hates what the bank does, and yet the bank does it. The bank is something more than men, I tell you. It's the monster. Men made it, but they can't control it. (@steinbeck2006grapes)
+
+I am sure there is a cadre of Silicon Valley types who see the coming shift, and fear it, hate it even. But, I guarantee that each one thinks, 'if not us, then the competition'. The bank must be protected. If OpenAI gives up, Google will not, and OpenAI's employees will be out of work. It isn't evil, it's the consequence of everyone protecting their salary -- to feed themselves, if we take money out of consideration. I would not ask an AI programmer to quit their job to protect mine, to endure the stress of a career change so I don't have to. After all, they would be replaced by someone as eager and will. We made AI, we can't control it's effects. And, like the tractor driver in the first excerpt, we can't think of those being put out of work, we have our own to think of. I am writing an essay only thinking of myself, the risks posed to me. Not once have I mentioned the potential of AI to radically change society for the better, only my own worries of being left behind.
+
+These changes have not happened yet, but I am sure they will. Proprietary AI will eliminate waste. Private or public, your employer will eliminate waste eventually. It's cheaper to pay for electricity than a worker. Cheaper to have an AI access the infinite knowledge at it's fingertips than to train someone. Not everyone will lose their desk work, but can we withstand the lost of 80% of them? Even 20%? We should all start looking for higher ground, but will there be room enough? Can these changes happen without supply and demand driving down the wages of the jobs which remain? 
+
+There are many questions to be answers, and Steinbeck takes a grim view. The mechanization of agriculture is not stopped. The Joad family, traveling from Oklahoma to California in search of work, never finds steady employment, and it feels as though they are placed on rails, directed by a beast of our own making, but out of our control. Never once do they unite with others to fight the bank; and if they did, another bank would rise. Competition remains, everyone must work for their three dollars a day, thinking only of their own. 
+
+My opinion on AI swings. I think the world as a whole will change for the better. I do not think my world will. There is always talk of Universal Basic Income or some other drastic policy to make up for the redundancy of entire industries, but none of the powers we've elected stand for it, and the coming changes will happen faster than we react. The farmers in Steinbeck may have again found success, but *The Grapes of Wrath*, published in 1939 as the Great Depression continued, was not so optimistic. We may be left behind, and we can't know if we'll be able to catch up again.
