@@ -1,0 +1,2372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss  xmlns:atom="http://www.w3.org/2005/Atom" 
+      xmlns:media="http://search.yahoo.com/mrss/" 
+      xmlns:content="http://purl.org/rss/1.0/modules/content/" 
+      xmlns:dc="http://purl.org/dc/elements/1.1/" 
+      version="2.0">
+<channel>
+<title>Aidan Berg</title>
+<link>https://aidanberg.us/blog.html</link>
+<atom:link href="https://aidanberg.us/blog.xml" rel="self" type="application/rss+xml"/>
+<description>Data science, professional portfolio, and personal musings</description>
+<generator>quarto-1.3.433</generator>
+<lastBuildDate>Tue, 07 Nov 2023 06:00:00 GMT</lastBuildDate>
+<item>
+  <title>#TidyTuesday, 11/7/23</title>
+  <dc:creator>Aidan Berg</dc:creator>
+  <link>https://aidanberg.us/posts/Tidy-Tuesday-11-07-23/index.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<p>I am back for another #TidyTuesday! After the somewhat disappointing results <a href="https://aidanberg.us/posts/Tidy-Tuesday-10-24-23/">I found in my last post</a>, I was relieved to find that this week’s <a href="https://github.com/rfordatascience/tidytuesday/blob/master/data/2023/2023-11-07/readme.md">dataset</a> is the US House Election Results from 1976-2022, as presented by the MIT Election Data and Science Lab <span class="citation" data-cites="DVN/IG0UN2_2017">(Data and Lab 2017)</span>.</p>
+<p>While I am more of a health researcher, I’m always happy to put on my 538-hat<sup>1</sup> and try my hand at political science. While the amount of coverage of elections in the US is certainly tiresome, it does give statisticians a lot of data to play around with, which, as a statistician who lives outside of a battleground state, is quite nice.</p>
+<p>My non-battleground state is Illinois, which is famously a stronghold of the Democratic Party: as of writing, the last time the state voted for a Republican candidate was 35 years ago, in 1988! Since then, Illinois has only become more and more liberal. So why, then, am I exploring a state which has been, at least in presidential election terms, unexciting since Mikail Gorbachev led the Soviet Union?</p>
+<section id="downstate-upstate-collar-counties-and-the-like" class="level2">
+<h2 class="anchored" data-anchor-id="downstate-upstate-collar-counties-and-the-like">Downstate, upstate, collar counties, and the like</h2>
+<p>Because, if you get under the hood of the seedy underbelly<sup>2</sup> of Illinois politics, we find a very interesting situation. Illinois’ largest urban area is Chicago in Cook County, and Chicago is a large city<sup>3</sup>. Chicago is the state’s largest city, and it’s suburbs contain the 2nd, 3rd, 4th, and 6th largest cities by population. This has led to a lopsided population imbalance between the city of Chicago and it’s closest, oldest suburbs, the newer suburban counties surrounding Chicago, and the rest of the state.</p>
+<p>All this is common knowledge, so to quickly explain everything: Chicago and Cook County are Chicago, the collar counties are the 5 counties which adjoin Cook County<sup>4</sup>, and ‘downstate’ is the remaining 96 counties in Illinois. Personally, I’m always astonished by the sheer size of Chicago, where so many people live that the majority of the state is simple ‘downstate’. This has led to the political dynamics that I’d like to explore today.</p>
+<p>You see, the congressional districts in Chicago have almost always been democratic strongholds, those ‘downstate’ have been republican strongholds. The collar counties, however, containing those election-swaying suburban voters, tend to flip-flop. The votes of the collar counties are the reason why Republican candidates clung to hope in state elections as Illinois liberalized, such as Former Governor Bruce Rauner’s term from 2015 to 2019.</p>
+</section>
+<section id="picking-through-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="picking-through-the-data">Picking through the data</h2>
+<p>Anyways, these intra-state dynamics, seemingly defined by an urban/rural divide between Chicagoland and downstate Illinois, are what make political studies within Illinois so interesting, since the only other state with a similar makeup is New York<sup>5</sup>. Without furtherado, let’s crack open the dataset. I have a very specific idea of the visualization I’d like to make, inspired by <a href="https://r-graph-gallery.com/web-dumbbell-chart-with-a-gap-column.html">this dumbbell plot from the R Graph Gallery</a>. I’d also like to make some maps, since I have been wanting to work more with R’s mapping/GIS capabilities. I know for a fact that a map of just Illinois will be insufficient, since the congressional districts of Chicago are <a href="https://en.wikipedia.org/wiki/Illinois%27s_4th_congressional_district">quite famous for their gerrymandered complexity</a>, so I’ll have to make an inset map. That’s two visualizations, so I’ll make those and call it a day.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">knitr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span>opts_chunk<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">echo =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>)</span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidyverse)    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># for just about everything</span></span>
+<span id="cb1-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(patchwork)    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># for stitching charts together</span></span>
+<span id="cb1-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidytuesdayR) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># for loading the data</span></span>
+<span id="cb1-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(sf)           <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># for making maps</span></span>
+<span id="cb1-6"></span>
+<span id="cb1-7">tuesdata <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tt_load</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'2023-11-07'</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Downloading file 1 of 1: `house.csv`</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">house <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> tuesdata<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>house</span>
+<span id="cb3-2"></span>
+<span id="cb3-3">map <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read_sf</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cb_2022_us_cd118_500k.shp"</span>)</span></code></pre></div>
+</div>
+<p>Great, the easy part is complete! Now to narrow the data to just Illinois’ 2022 election results for the 118th Congress.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">map <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> map <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(STATEFP <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">17</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span> </span>
+<span id="cb4-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rename</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"district"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"CD118FP"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span>             <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># We'll match on this later</span></span>
+<span id="cb4-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">district =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_remove</span>(district, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"^0+"</span>)) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># remove all leading zeros</span></span>
+<span id="cb4-5"></span>
+<span id="cb4-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># filter, reduce third party and write-in candidates into one category</span></span>
+<span id="cb4-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># this is the cleaning pipeline</span></span>
+<span id="cb4-8">house_il <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> house <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(state_po <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"IL"</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span> year <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2022</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span> <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># narrow the dataset</span></span>
+<span id="cb4-10">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">select</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(candidate, </span>
+<span id="cb4-11">            unofficial, </span>
+<span id="cb4-12">            version,                          <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># drop unneeded columns</span></span>
+<span id="cb4-13">            fusion_ticket, </span>
+<span id="cb4-14">            state_po, </span>
+<span id="cb4-15">            state_fips)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-16">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">district =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_remove</span>(district, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"^0+"</span>), <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># remove leading zero</span></span>
+<span id="cb4-17">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">district =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as_factor</span>(district),         <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># district needs to be factor</span></span>
+<span id="cb4-18">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">party =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">replace_na</span>(party, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"third_party"</span>),</span>
+<span id="cb4-19">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">party =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as_factor</span>(party),</span>
+<span id="cb4-20">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">party =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fct_other</span>(party,                <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># clean up third/write-in votes</span></span>
+<span id="cb4-21">                           <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">keep =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"REPUBLICAN"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"DEMOCRAT"</span>),</span>
+<span id="cb4-22">                           <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">other_level =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Third Party"</span>),</span>
+<span id="cb4-23">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">percent =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>((candidatevotes <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> totalvotes) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>,</span>
+<span id="cb4-24">                         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">digits =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-25">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">group_by</span>(district, party) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-26">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">reframe</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">percent =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(percent)) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># collapse into three categories per district</span></span>
+<span id="cb4-27"></span>
+<span id="cb4-28"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># make it wide, compute additional variables for plotting</span></span>
+<span id="cb4-29">house_il_wide <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> house_il <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-30">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pivot_wider</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">names_from =</span> party, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">values_from =</span> percent) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-31">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rename</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Democrat"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"DEMOCRAT"</span>,        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># clean up names, at last</span></span>
+<span id="cb4-32">         <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Republican"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"REPUBLICAN"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-33">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">gap =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(Democrat <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> Republican, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">digits =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>), <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># compute gap</span></span>
+<span id="cb4-34">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">chicagoland =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as_factor</span>( <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># flag all districts in Chicago metro area</span></span>
+<span id="cb4-35">           <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">if_else</span>(district <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%in%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">7</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">9</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">11</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">14</span>),</span>
+<span id="cb4-36">                   <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Chicagoland"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Downstate IL"</span>))) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-37">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">group_by</span>(district) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-38">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">max =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(Democrat, Republican), <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># who had the best percent of the vote</span></span>
+<span id="cb4-39">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">min =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">min</span>(Democrat, Republican)) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># this'll be useful for the plots</span></span>
+<span id="cb4-40"></span>
+<span id="cb4-41"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># pivot back to long for easier plots, retain original for backup         </span></span>
+<span id="cb4-42">house_il_long <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> house_il_wide <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-43">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pivot_longer</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(Democrat, Republican, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Third Party</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span>),</span>
+<span id="cb4-44">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">names_to =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"party"</span>,</span>
+<span id="cb4-45">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">values_to =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"percent"</span>)</span></code></pre></div>
+</div>
+<p>Wow, those were some very long pipes! However, it was mostly cleaning and flip-flopping the data from long to wide to long again to compute the little bits and bobs that I’ll call on for the chart. I also added a variable for whether or not a district is in the Chicago metropolitan area, <code>chicagoland</code>, since this is the relationship I’d like to explore. It was also my first time using the <code>reframe()</code> function, and I must say I am a fan. Now, let’s make the dumbbell plot. My goal is to show the percent of the vote captured by each party, the margin of victory for the winner, and whether or not the district was in Chicagoland. Here’s what I came up with.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">dumbbellplot <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> </span>
+<span id="cb5-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(house_il_long, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> percent, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> district)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> min,</span>
+<span id="cb5-4">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> max,</span>
+<span id="cb5-5">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> district,</span>
+<span id="cb5-6">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> district),</span>
+<span id="cb5-7">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#E7E7E7"</span>,</span>
+<span id="cb5-8">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linewidth =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3.5</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_point</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> party), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> </span>
+<span id="cb5-10">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_text</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> percent, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> party),</span>
+<span id="cb5-11">            <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3.25</span>,</span>
+<span id="cb5-12">            <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">nudge_x =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">case_when</span>(</span>
+<span id="cb5-13">              house_il_long<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>party <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Third Party"</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb5-14">              house_il_long<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>percent <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> house_il_long<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>max <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span></span>
+<span id="cb5-15">                house_il_long<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>party <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Third Party"</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb5-16">              house_il_long<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>percent <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> house_il_long<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>max <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span></span>
+<span id="cb5-17">                house_il_long<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>party <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Third Party"</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb5-18">              house_il_long<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>percent <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">95</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>), <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># this is nasty, but functional</span></span>
+<span id="cb5-19">            <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">hjust =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">case_when</span>(</span>
+<span id="cb5-20">              house_il_long<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>party <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Third Party"</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb5-21">              house_il_long<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>percent <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> house_il_long<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>max <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span></span>
+<span id="cb5-22">                house_il_long<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>party <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Third Party"</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb5-23">              house_il_long<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>percent <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> house_il_long<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>max <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span></span>
+<span id="cb5-24">                house_il_long<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>party <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Third Party"</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-25">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_minimal</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-26">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">legend.title =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_blank</span>(),</span>
+<span id="cb5-27">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">legend.direction =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"vertical"</span>,</span>
+<span id="cb5-28">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">legend.position =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(.<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">90</span>, .<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>), <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># legend within chart for detail</span></span>
+<span id="cb5-29">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">axis.text.y =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_text</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"black"</span>),</span>
+<span id="cb5-30">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">axis.text.x =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_text</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#989898"</span>),</span>
+<span id="cb5-31">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">axis.title =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_blank</span>(),</span>
+<span id="cb5-32">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">panel.grid =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_blank</span>(),</span>
+<span id="cb5-33">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">strip.text =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_blank</span>()) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-34">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"%"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NULL</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-35">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_color_manual</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">values =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"navy"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"darkred"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#111111"</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-36">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_x_continuous</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">labels =</span> scales<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">percent_format</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">scale =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-37">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_y_discrete</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">limits =</span> rev) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-38">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">facet_grid</span>(chicagoland <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> .,</span>
+<span id="cb5-39">             <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">scales =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"free_y"</span>)</span>
+<span id="cb5-40"></span>
+<span id="cb5-41"> <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># this is just the dumbbell plot, I'll need another chart to add the margin</span></span>
+<span id="cb5-42"></span>
+<span id="cb5-43"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># this will make the chart look a hair more detailed (e.g., +5D over 5)</span></span>
+<span id="cb5-44">house_il_wide <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> house_il_wide <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb5-45">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">gap_party_max =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">case_when</span>(Democrat <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> max <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"D"</span>,</span>
+<span id="cb5-46">                                   Republican <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> max <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"R"</span>),</span>
+<span id="cb5-47">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">gap_label =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">if_else</span>(</span>
+<span id="cb5-48">           <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.na</span>(gap), <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"No contest"</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"+"</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(gap), gap_party_max)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb5-49">           <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fct_inorder</span>())</span>
+<span id="cb5-50"></span>
+<span id="cb5-51">gapcol <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(house_il_wide, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(gap, district)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-52">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_text</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> gap_label, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> gap_party_max),</span>
+<span id="cb5-53">            <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fontface =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"bold"</span>,</span>
+<span id="cb5-54">            <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3.25</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-55">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">facet_grid</span>(chicagoland <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> .,</span>
+<span id="cb5-56">             <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">scales =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"free_y"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-57">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_color_manual</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">values =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"navy"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"darkred"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#111111"</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-58">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_y_discrete</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">limits =</span> rev) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-59">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_void</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-60">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">plot.margin =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">margin</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">l =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">r=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">b=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">t=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>),</span>
+<span id="cb5-61">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">panel.background =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_rect</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#EFEFE3"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#EFEFE3"</span>),</span>
+<span id="cb5-62">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">legend.position =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"none"</span>,</span>
+<span id="cb5-63">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">strip.text =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_text</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">angle =</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">90</span>, </span>
+<span id="cb5-64">                                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">vjust =</span> .<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span>))</span>
+<span id="cb5-65">whole_chart <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> </span>
+<span id="cb5-66">  dumbbellplot <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> gapcol <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-67">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot_layout</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">design =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">area</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">l=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">r=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">45</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">t=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">b=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>),</span>
+<span id="cb5-68">                         <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">area</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">l=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">46</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">r=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">52</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">t=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">b=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>))) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-69">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot_annotation</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Margin of victory by congressional district"</span>,</span>
+<span id="cb5-70">                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">subtitle =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Chicagoland districts compared to 'downstate' Illinois"</span>,</span>
+<span id="cb5-71">                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">caption =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Source: MIT Election Data and Science Lab"</span>)</span>
+<span id="cb5-72">whole_chart</span></code></pre></div>
+<div class="cell-output-display">
+<p><img src="https://aidanberg.us/posts/Tidy-Tuesday-11-07-23/index_files/figure-html/dumbbell plot-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Again, after a lot of painstaking code, and much work under the hood tweaking alignment and spacing, we have a plot that looks very good. Already, the dynamics are fascinating. The Democratic party is not only strong in Chicagoland, but dominates it. In the 7th district, the Republican party didn’t even put up a candidate! Downstate, things are different. the 12th, 15th, and 16th districts are very heavily leaned Republican, although the 13th is strongly Democratic, probably due to the presence of college-town Champaign<sup>6</sup> and East St.&nbsp;Louis. In fact, the only district close to a battleground is the 17th, possibly because of the large swathes of rural areas and the Quad Cities setting up the district as the closest thing to a competition in the whole state.</p>
+<p>I am quite pleased with this chart, but let’s make some maps to show another angle of the Chicagoland/downstate dynamics. This will allow us to see the impact of the collar-counties a bit better, and it will show how gerrymandering is still an issue in Illinois.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1">mapping_data <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">full_join</span>(map, house_il_wide, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"district"</span>) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># join map data </span></span>
+<span id="cb6-2"></span>
+<span id="cb6-3">state_map <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(mapping_data) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_sf</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">if_else</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.na</span>(gap), <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">99.4</span>, gap))) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_fill_gradient2</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">low =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"darkred"</span>, </span>
+<span id="cb6-6">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">high =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"navy"</span>, </span>
+<span id="cb6-7">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midpoint =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, </span>
+<span id="cb6-8">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">name =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Margin of Victory,</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">Percentage Points"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_void</span>()</span>
+<span id="cb6-10"></span>
+<span id="cb6-11">chi_map <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(mapping_data) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-12">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_sf</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">if_else</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.na</span>(gap), <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">99.4</span>, gap))) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-13">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">coord_sf</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xlim =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">88.55</span>, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">87.5</span>),</span>
+<span id="cb6-14">           <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ylim =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">41.5</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">42.5</span>),</span>
+<span id="cb6-15">           <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">expand =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-16">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_fill_gradient2</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">low =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"darkred"</span>, </span>
+<span id="cb6-17">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">high =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"navy"</span>, </span>
+<span id="cb6-18">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midpoint =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, </span>
+<span id="cb6-19">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">name =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Margin of Victory,</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">Percentage Points"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-20">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_void</span>()</span>
+<span id="cb6-21"></span>
+<span id="cb6-22">margin_map <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> state_map <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> </span>
+<span id="cb6-23">  chi_map <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> </span>
+<span id="cb6-24">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot_layout</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">guides =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'collect'</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-25">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot_annotation</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Margin of victory by congressional district"</span>,</span>
+<span id="cb6-26">                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">subtitle =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Illinois, with Chicago detail"</span>,</span>
+<span id="cb6-27">                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">caption =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Source: MIT Election Data and Science Lab"</span>)</span>
+<span id="cb6-28"></span>
+<span id="cb6-29">margin_map</span></code></pre></div>
+<div class="cell-output-display">
+<p><img src="https://aidanberg.us/posts/Tidy-Tuesday-11-07-23/index_files/figure-html/maps-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Perfect! We can almost see a gradient from the rural districts to the loop of Chicago. This suggests an association which I’m sure University of Chicago poly-sci undergradutes understand more deeply than I can imagine. We can also see the effect of gerrymandering, to some extent (why does the 13th, the pale blue district in the south, stretch 3/4 of the way across the state?) Illinois has been cleaning up it’s districts, thanks to a steady decline in population leading to redistricting, but it’s clear that there’s some work to be done.</p>
+<p>Either way, that’s me for today. I could make all of these charts much, much better, like adding labels to the districts on the map, centering the Chicago inset instead of using the border with Wisconsin as an anchor and generally cleaning up fonts and spacing, but the hour is late, and I’d like to wrap up. This was a lot of fun, the amount of detail than can be sunk into each chart is nearly infinite, and I was happy to get some more experience working with maps. Till next time!</p>
+<p><em>The album I listened to while picking apart the politics of Illinois was <a href="https://open.spotify.com/album/1pOl0KEC1iQnA6F0XxV4To?si=hCkHVQpCRsSvnGqYJkp_6w">Illinois</a> by Surfjan Stevens</em></p>
+<section id="references" class="level3">
+<h3 class="anchored" data-anchor-id="references">References</h3>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-DVN/IG0UN2_2017" class="csl-entry">
+Data, MIT Election, and Science Lab. 2017. <span>“<span>U.S. House 1976–2022</span>.”</span> Harvard Dataverse. <a href="https://doi.org/10.7910/DVN/IG0UN2">https://doi.org/10.7910/DVN/IG0UN2</a>.
+</div>
+</div>
+
+
+</section>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>As someone who gained political awareness, and then political agency, in the heated 2016 and 2018 elections, Nate Silver was a huge inspiration for a budding data scientist.↩︎</p></li>
+<li id="fn2"><p>While this might be a potshot at Illinois’ famously corrupt politics, I’m going to cut my native state a bit of slack (for now).↩︎</p></li>
+<li id="fn3"><p><em>citation needed</em>↩︎</p></li>
+<li id="fn4"><p>Specifically, DuPage, Kane, Lake, McHenry, and Will County.↩︎</p></li>
+<li id="fn5"><p>California comes close, but the urban/rural delineation is different due to the presence of multiple large urban areas (e.g., Los Angeles, San Francisco, San Diego, San Jose, etc. etc.), while New York and Illinois have one very, very large city.↩︎</p></li>
+<li id="fn6"><p>Go Illini!↩︎</p></li>
+</ol>
+</section></div> ]]></description>
+  <category>code</category>
+  <category>analysis</category>
+  <guid>https://aidanberg.us/posts/Tidy-Tuesday-11-07-23/index.html</guid>
+  <pubDate>Tue, 07 Nov 2023 06:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>#TidyTuesday, 10/24/23</title>
+  <dc:creator>Aidan Berg</dc:creator>
+  <link>https://aidanberg.us/posts/Tidy-Tuesday-10-24-23/index.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<p>After a long while of trying to explain exactly what I do to curious family and friends, I have decided to start up a data science blog, to replace my old professional website, and to maybe develop a bit of a portfolio of my work. Since I am a dedicated useR, and have always wanted to be involved in the R community, I decided to jump into #TidyTuesday as my first post! I won’t waste any more time and import the dataset.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidytuesdayR)</span>
+<span id="cb1-2"></span>
+<span id="cb1-3">tuesdata <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tt_load</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2023</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">week =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">43</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Downloading file 1 of 1: `patient_risk_profiles.csv`</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">patient_risk_profiles <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> tuesdata<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>patient_risk_profiles</span>
+<span id="cb3-2"></span>
+<span id="cb3-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span>(patient_risk_profiles)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 100
+  personId `age group:  10 -  14` `age group:  15 -  19` `age group:  20 -  24`
+     &lt;dbl&gt;                  &lt;dbl&gt;                  &lt;dbl&gt;                  &lt;dbl&gt;
+1        1                      0                      0                      0
+2        2                      0                      0                      0
+3        3                      0                      0                      0
+4        4                      0                      0                      0
+5        5                      0                      0                      0
+6        6                      0                      0                      0
+# ℹ 96 more variables: `age group:  65 -  69` &lt;dbl&gt;,
+#   `age group:  40 -  44` &lt;dbl&gt;, `age group:  45 -  49` &lt;dbl&gt;,
+#   `age group:  55 -  59` &lt;dbl&gt;, `age group:  85 -  89` &lt;dbl&gt;,
+#   `age group:  75 -  79` &lt;dbl&gt;, `age group:   5 -   9` &lt;dbl&gt;,
+#   `age group:  25 -  29` &lt;dbl&gt;, `age group:   0 -   4` &lt;dbl&gt;,
+#   `age group:  70 -  74` &lt;dbl&gt;, `age group:  50 -  54` &lt;dbl&gt;,
+#   `age group:  60 -  64` &lt;dbl&gt;, `age group:  35 -  39` &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+<p>Luckily for me, it seems that I’ve gotten the best dataset an epidemiologist could ask for – health data! More specifically, it is “100 simulated patient’s medical history features and the predicted 1-year risk of 14 outcomes based on each patient’s medical history features”, per the <a href="https://github.com/rfordatascience/tidytuesday/blob/master/data/2023/2023-10-24/readme.md">tidytuesday repo</a></p>
+<p>It also seems that the <a href="https://rinpharma.com/">R/Pharma Conference</a> opted to send in a slightly messy dataset. This shouldn’t be problem, I tend to enjoy the data cleaning process<sup>1</sup>, it’s like a form of spreadsheet <em>kintsugi</em>, where I can make a broken dataset more beautiful and informative. Looking to the actual dataset, it seems we have 100 variables, which have some unconventional names. Additionally, age group is spread out over 19 columns, which are slightly out of order. I’ll start by trimming the age group columns into one ordered factor variable using <code>case_when()</code> from <code>dplyr</code> and some of the <code>forcats</code> functions, then I’ll chip away at the column names.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidyverse)</span>
+<span id="cb5-2"></span>
+<span id="cb5-3">patient_risk_profiles <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> patient_risk_profiles <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb5-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">age_group =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">case_when</span>(</span>
+<span id="cb5-5">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">age group:   0 -   4</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"0-4"</span>,</span>
+<span id="cb5-6">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">age group:   5 -   9</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"5-9"</span>,</span>
+<span id="cb5-7">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">age group:  10 -  14</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"10-14"</span>,</span>
+<span id="cb5-8">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">age group:  15 -  19</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"15-19"</span>,</span>
+<span id="cb5-9">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">age group:  20 -  24</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"20-24"</span>,</span>
+<span id="cb5-10">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">age group:  25 -  29</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"25-29"</span>,</span>
+<span id="cb5-11">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">age group:  30 -  34</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"30-34"</span>,</span>
+<span id="cb5-12">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">age group:  35 -  39</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"35-39"</span>,</span>
+<span id="cb5-13">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">age group:  40 -  44</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"40-44"</span>,</span>
+<span id="cb5-14">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">age group:  45 -  49</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"45-49"</span>,</span>
+<span id="cb5-15">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">age group:  50 -  54</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"50-54"</span>,</span>
+<span id="cb5-16">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">age group:  55 -  59</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"55-59"</span>,</span>
+<span id="cb5-17">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">age group:  60 -  64</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"60-64"</span>,</span>
+<span id="cb5-18">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">age group:  65 -  69</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"65-69"</span>,</span>
+<span id="cb5-19">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">age group:  70 -  74</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"70-74"</span>,</span>
+<span id="cb5-20">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">age group:  75 -  79</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"75-79"</span>,</span>
+<span id="cb5-21">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">age group:  80 -  84</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"80-84"</span>,</span>
+<span id="cb5-22">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">age group:  85 -  89</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"85-89"</span>,</span>
+<span id="cb5-23">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">age group:  90 -  94</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"90-94"</span></span>
+<span id="cb5-24">  ))</span>
+<span id="cb5-25">  </span>
+<span id="cb5-26">patient_risk_profiles<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>age_group <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> patient_risk_profiles<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>age_group <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span> </span>
+<span id="cb5-27">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as_factor</span>() <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># now convert to factor</span></span>
+<span id="cb5-28"></span>
+<span id="cb5-29"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">levels</span>(patient_risk_profiles<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>age_group) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># check levels</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "5-9"   "80-84" "45-49" "30-34" "60-64" "75-79" "15-19" "65-69" "55-59"
+[10] "35-39" "10-14" "20-24" "0-4"   "40-44" "25-29" "70-74" "90-94" "50-54"
+[19] "85-89"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1">patient_risk_profiles<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>age_group <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> patient_risk_profiles<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>age_group <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span> </span>
+<span id="cb7-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fct_relevel</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"0-4"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"5-9"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"10-14"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"15-19"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"20-24"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"25-29"</span>, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># manually fix</span></span>
+<span id="cb7-3">              <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"30-34"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"35-39"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"40-44"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"45-49"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"50-54"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"55-59"</span>,</span>
+<span id="cb7-4">              <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"60-64"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"65-69"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"70-74"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"75-79"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"80-84"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"85-89"</span>,</span>
+<span id="cb7-5">              <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"90-94"</span>)</span>
+<span id="cb7-6"></span>
+<span id="cb7-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">levels</span>(patient_risk_profiles<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>age_group) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># fixed!</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "0-4"   "5-9"   "10-14" "15-19" "20-24" "25-29" "30-34" "35-39" "40-44"
+[10] "45-49" "50-54" "55-59" "60-64" "65-69" "70-74" "75-79" "80-84" "85-89"
+[19] "90-94"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># cut down on column bloat</span></span>
+<span id="cb9-2">patient_risk_profiles <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> patient_risk_profiles <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb9-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">select</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">age group:  10 -  14</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">age group:  90 -  94</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span>))</span></code></pre></div>
+</div>
+<p>Okay, things are already looking better! It was a bit tedious to reorder the age groups, but there are 18 fewer columns to deal with. Next, I’m just going to drop the <code>Sex = MALE</code> column – most datasets I’ve seen just use one column for sex assigned at birth. Then, I am going to cut down the variable names to shorthand, before tossing them into <code>janitor</code> to force all column names to snake case. I’m also removing the word predicted from the predicted risk variables. This is because the word ‘risk’, to me, already implies a prediction. The same goes for the string “Occurrence of”. Also, I just now noticed that the variables which should be simple 0-1 factors are in fact coded as integers. I will fix this as well.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1">patient_risk_profiles <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> patient_risk_profiles <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span> </span>
+<span id="cb10-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">select</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Sex = MALE</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb10-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rename</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sex =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Sex = FEMALE</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span>)</span>
+<span id="cb10-4"></span>
+<span id="cb10-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># while we're here, sex should really be a factor</span></span>
+<span id="cb10-6">patient_risk_profiles<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>sex <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> patient_risk_profiles<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>sex <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb10-7">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">factor</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">levels =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>),</span>
+<span id="cb10-8">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">labels =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Male"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Female"</span>))</span>
+<span id="cb10-9"></span>
+<span id="cb10-10"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(janitor)</span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'janitor'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    chisq.test, fisher.test</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># names to shorthand</span></span>
+<span id="cb13-2">patient_risk_profiles <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> patient_risk_profiles <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span> </span>
+<span id="cb13-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rename_with</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_replace</span>(.,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">" in "</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"_"</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb13-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rename_with</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_remove</span>(., <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">" at "</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb13-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rename_with</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_remove</span>(., <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"predicted "</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb13-6">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rename_with</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_remove</span>(., <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Occurrence of "</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb13-7">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">clean_names</span>()</span>
+<span id="cb13-8"></span>
+<span id="cb13-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># I'm sure someone is wincing because I couldn't figure out how to use one </span></span>
+<span id="cb13-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># rename_with command. This is entirely fair.</span></span>
+<span id="cb13-11">  </span>
+<span id="cb13-12">patient_risk_profiles <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> patient_risk_profiles <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb13-13">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(</span>
+<span id="cb13-14">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">across</span>(</span>
+<span id="cb13-15">      acetaminophen_exposures_prior_year<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>antibiotics_tetracyclines_prior_year,</span>
+<span id="cb13-16">      as.factor</span>
+<span id="cb13-17">  ))</span>
+<span id="cb13-18"></span>
+<span id="cb13-19"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span>(patient_risk_profiles)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 81
+  person_id sex   acetaminophen_exposu…¹ alcoholism_prior_year anemia_prior_year
+      &lt;dbl&gt; &lt;fct&gt; &lt;fct&gt;                  &lt;fct&gt;                 &lt;fct&gt;            
+1         1 Fema… 1                      0                     0                
+2         2 Male  0                      0                     0                
+3         3 Male  0                      0                     0                
+4         4 Male  0                      0                     0                
+5         5 Fema… 0                      0                     1                
+6         6 Male  0                      0                     0                
+# ℹ abbreviated name: ¹​acetaminophen_exposures_prior_year
+# ℹ 76 more variables: angina_events_prior_year &lt;fct&gt;,
+#   antiepileptics_prior_year &lt;fct&gt;, anxiety_prior_year &lt;fct&gt;,
+#   osteoarthritis_prior_year &lt;fct&gt;, aspirin_exposures_prior_year &lt;fct&gt;,
+#   asthma_prior_year &lt;fct&gt;, atrial_fibrillation_incident_prior_year &lt;fct&gt;,
+#   hormonal_contraceptives_prior_year &lt;fct&gt;,
+#   any_cancer_excl_prostate_cancer_and_benign_cancer_prior_year &lt;fct&gt;, …</code></pre>
+</div>
+</div>
+<p>These names are still not perfect<sup>2</sup>. However, most of the common patterns of messy name have been stamped out, and future fixes will occur on a case-by-case basis. I also made sure to retain the <code>prior_year</code> portion of each column name where it occured, because without it, it may be difficult to figure out which variable is which.</p>
+<p>Yes, this is a bit lazy, but with 81 columns to manually fix, I think I’ll turn to analysis. This dataset so far has given me a warm sense of nostalgia for my biostatistics classes in graduate school, even down to a logistic regression output! Back then I was using STATA as my analysis software of choice<sup>3</sup>, which was fun, but never had the suite of data visualization tools that drew me into R in the first place. Furthermore, I have pivoted my research to explore substance use disorder, and there are a few variables which I can use to explore some association. We have a variable for past-year alcoholism, opioids and smoking<sup>4</sup>, all of which I research on a daily basis! I think it could be interesting to see how well past-year substance use<sup>5</sup> correlates with risk of a few of the health conditions given in the dataset, controlling for age, since we spent so long creating an age variable. For this, I’ll need to coalesce substance use into one variable (mostly to lump together cases where a patient had multiple instances of substance abuse), then create my visualizations.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1">patient_risk_profiles <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> patient_risk_profiles <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb15-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">substance_use_prior_year =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">case_when</span>(</span>
+<span id="cb15-3">    opioids_prior_year <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span> </span>
+<span id="cb15-4">      alcoholism_prior_year <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span> </span>
+<span id="cb15-5">      smoking_prior_year <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span> </span>
+<span id="cb15-6">    <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"No substance use"</span>,</span>
+<span id="cb15-7">    opioids_prior_year <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Opioids"</span>,</span>
+<span id="cb15-8">    alcoholism_prior_year <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Alcoholism"</span>,</span>
+<span id="cb15-9">    smoking_prior_year <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Smoking"</span>,</span>
+<span id="cb15-10">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">.default =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Multiple substance use"</span> </span>
+<span id="cb15-11">                 <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># lump patients with multiple instances of prior year</span></span>
+<span id="cb15-12">  ))             <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># use into 'other'</span></span>
+<span id="cb15-13">  </span>
+<span id="cb15-14">patient_risk_profiles<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>substance_use_prior_year <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> </span>
+<span id="cb15-15">  patient_risk_profiles<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>substance_use_prior_year <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb15-16">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as_factor</span>()</span>
+<span id="cb15-17"></span>
+<span id="cb15-18"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(patient_risk_profiles) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb15-19">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_jitter</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> age_group,</span>
+<span id="cb15-20">                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> risk_of_dementia,</span>
+<span id="cb15-21">                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> age_group)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb15-22">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Age Group"</span>,</span>
+<span id="cb15-23">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Dementia Risk"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb15-24">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">legend.position =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"none"</span>,</span>
+<span id="cb15-25">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">axis.text.x =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_text</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">angle =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">90</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">hjust =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">vjust =</span> .<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb15-26">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">facet_wrap</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">vars</span>(substance_use_prior_year)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb15-27">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">axis.text.x =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_text</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">angle =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">90</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">hjust =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">vjust =</span> .<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>),</span>
+<span id="cb15-28">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">legend.key =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_blank</span>(),</span>
+<span id="cb15-29">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">panel.background =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_blank</span>(),</span>
+<span id="cb15-30">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">panel.grid =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_blank</span>(),</span>
+<span id="cb15-31">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">panel.grid.major.y =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_line</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"gray"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linewidth =</span> .<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">25</span>),</span>
+<span id="cb15-32">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">axis.line =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_line</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"black"</span>))  </span></code></pre></div>
+<div class="cell-output-display">
+<p><img src="https://aidanberg.us/posts/Tidy-Tuesday-10-24-23/index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>These charts do not seem to tell us much, except that it seems that age is (seemingly) exponentially associated with dementia risk; while certainly interesting, it is not an unusual correlation to find. Furthermore, it seems that the sample sizes are too small to make any meaningful conjectures about any subpopulation besides the population which did not have prior year smoking, alcoholism, or opioid use. Let’s try another angle then – maybe a different chart will help. Let’s take a look at depression risk, since mental health and substance use are frequently intertwined. I will also take the log of the risk to see things more clearly.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(patient_risk_profiles) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb16-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_jitter</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> age_group,</span>
+<span id="cb16-3">                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">log</span>(risk_of_treatment_resistant_depression_trd),</span>
+<span id="cb16-4">                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> substance_use_prior_year)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb16-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Age Cohort"</span>,</span>
+<span id="cb16-6">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Log of Risk of Treatment Resistant</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> Depression"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb16-7">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">guides</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">guide_legend</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Prior Year Substance Use"</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb16-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">axis.text.x =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_text</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">angle =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">90</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">hjust =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">vjust =</span> .<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>),</span>
+<span id="cb16-9">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">legend.key =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_blank</span>(),</span>
+<span id="cb16-10">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">panel.background =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_blank</span>(),</span>
+<span id="cb16-11">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">panel.grid =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_blank</span>(),</span>
+<span id="cb16-12">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">panel.grid.major.y =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_line</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"gray"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> .<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">25</span>),</span>
+<span id="cb16-13">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">axis.line =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_line</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"black"</span>))</span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: The `size` argument of `element_line()` is deprecated as of ggplot2 3.4.0.
+ℹ Please use the `linewidth` argument instead.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="https://aidanberg.us/posts/Tidy-Tuesday-10-24-23/index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Another swing, another messy scatter plot. There are some prior year opioid users who have elevated risk of TRD in the range of 20-24, but these three don’t quite represent an association. I’ll try one more time, with migraine risk.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(patient_risk_profiles) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb18-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_jitter</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> age_group,</span>
+<span id="cb18-3">                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">log</span>(risk_of_migraine),</span>
+<span id="cb18-4">                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> substance_use_prior_year)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb18-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Age Cohort"</span>,</span>
+<span id="cb18-6">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Log of Risk of Treatment</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> Resistant Depression"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb18-7">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">guides</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">guide_legend</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Prior Year Substance Use"</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb18-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">axis.text.x =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_text</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">angle =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">90</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">hjust =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">vjust =</span> .<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>),</span>
+<span id="cb18-9">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">legend.key =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_blank</span>(),</span>
+<span id="cb18-10">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">panel.background =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_blank</span>(),</span>
+<span id="cb18-11">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">panel.grid =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_blank</span>(),</span>
+<span id="cb18-12">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">panel.grid.major.y =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_line</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"gray"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> .<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">25</span>),</span>
+<span id="cb18-13">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">axis.line =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_line</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"black"</span>))</span></code></pre></div>
+<div class="cell-output-display">
+<p><img src="https://aidanberg.us/posts/Tidy-Tuesday-10-24-23/index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>And another messy scatterplot<sup>6</sup>. I think I will call it here. While I could easily spend hours working backwards to derive the models used in the dataset to generate the risk profiles for each simulated patient, setting up logistic regressions of my own, calculating risk rations<sup>7</sup> I do already spend much of my day coding with data that is extremely similar to this, so I’ll spare myself some work-outside-of-work. Still, I had quite a bit of fun exploring some of the <code>forcats</code> functions and working with the column strings – time is never wasted learning how to clean up a dataset. I’ve also been exploring the more powerful aspects of <code>ggplot2</code>, as you can see with the charts edited to look a bit less like default ggplot output.</p>
+<p>I will try to participate in #TidyTuesday every few weeks or so; it’s nice to use RStudio outside of a work setting, and I feel like the practice is invaluable. See you around!</p>
+<p><em>The album I chose to scrub this dataset to was <a href="https://open.spotify.com/album/2yzVgc23QD1GunHR1mVpB8?autoplay=true">Disco Volador</a>, by the Orielles.</em></p>
+
+
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Thank goodness↩︎</p></li>
+<li id="fn2"><p>In particular, both columns I called in the last <code>mutate</code> function are especially horrid, but I don’t want to take away the <code>antibiotics</code> string because otherwise it’s a useful landmark when navigating the dataset, similar to <code>risk</code> and <code>prior_year</code>.↩︎</p></li>
+<li id="fn3"><p>And by my choice, I mean per the syllabus.↩︎</p></li>
+<li id="fn4"><p>And steroids, however, I am more familiar with the effects of those I’ve mentioned, so I’ll leave steroids be for now.↩︎</p></li>
+<li id="fn5"><p>Alcoholism will have to serve as a proxy for heavy drinking – this isn’t quite accurate, but for now I’m just chumming the waters.↩︎</p></li>
+<li id="fn6"><p>Although the parabola formed with risk of depression raising during adulthood and dropping in childhood and old age is quite interesting…↩︎</p></li>
+<li id="fn7"><p>finding AIC and BIC for each model, plotting logistic regression outputs, deriving risk ratios, comparing my models to the risk profiles provided…↩︎</p></li>
+</ol>
+</section></div> ]]></description>
+  <category>news</category>
+  <category>code</category>
+  <category>analysis</category>
+  <guid>https://aidanberg.us/posts/Tidy-Tuesday-10-24-23/index.html</guid>
+  <pubDate>Tue, 24 Oct 2023 05:00:00 GMT</pubDate>
+</item>
+</channel>
+</rss>

@@ -1,12 +1,5 @@
 [
   {
-    "listing": "/index.html",
-    "items": [
-      "/posts/Tidy-Tuesday-11-07-23/index.html",
-      "/posts/Tidy-Tuesday-10-24-23/index.html"
-    ]
-  },
-  {
     "listing": "/blog.html",
     "items": [
       "/posts/Tidy-Tuesday-11-07-23/index.html",
