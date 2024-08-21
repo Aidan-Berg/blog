@@ -9,7 +9,7 @@ website:
     right:
       - blog.qmd
       - icon: rss
-      - href: index.xml
+      - href: sitemap.xml
       - icon: github
         href: https://github.com/Aidan-Berg
       - icon: linkedin
