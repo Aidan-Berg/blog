@@ -3,9 +3,13 @@ project:
   output-dir: docs
 website:
   title: "Aidan Berg"
+  site-url: https://aidanberg.us/
+  description: "Data science, professional portfolio, and personal musings"
   navbar:
     right:
       - blog.qmd
+      - icon: rss
+      - href: index.xml
       - icon: github
         href: https://github.com/Aidan-Berg
       - icon: linkedin
