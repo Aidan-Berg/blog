@@ -10,13 +10,15 @@ about:
       href: mailto:bergaidanj@gmail.com
     - icon: github
       href: https://github.com/Aidan-Berg
+    - icon: bluesky
+      href: https://bsky.app/profile/aidanberg.bsky.social
 ---
 <div style="text-align: justify">
-Hello! I am Aidan Berg *(he/him)*, an epidemiologist working as a research data specialist at the University of Illinois School of Social Work. Currently, much of my work focuses on independent evaluation of Illinois Medicaid 1115 Behavioral Health Transformation Demonstration Waiver. I have an affinity for data cleaning, manipulation, analysis, and visualization with a variety of software packages, primarily R. When I am not working on data analysis, I am usually writing: grant reports, policy evaluation, IRB requests, PHI data applications, and whatever other technical writing can move our projects at UIUC's Center for Prevention Research and Development forward.
+Hello! I am Aidan Berg *(he/him)*, an epidemiologist working as a research data coordinator at the University of Illinois School of Social Work. Currently, much of my work focuses on independent evaluations of Illinois Medicaid 1115 Waivers. I have an affinity for data cleaning, manipulation, analysis, and visualization with a variety of software packages, primarily R. When I am not working on data analysis, I am usually writing: grant reports, policy evaluation, IRB requests, PHI data applications, and whatever other technical writing can move our projects at UIUC's <a href="https://cprd.illinois.edu/">Center for Prevention Research and Development</a> forward.
 
 When I'm not at work, I enjoy biking, board games, and reading.
 
-I also maintain an infrequently updated blog here, as usual, the opinions contained herein are my own, and do not reflect those of my colleagues and employers.
+I also maintain an infrequently updated blog here; the opinions contained herein are my own, and do not reflect those of my colleagues and employers.
 
 </div>
 ## Education
